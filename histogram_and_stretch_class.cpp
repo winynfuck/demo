@@ -63,7 +63,7 @@ public:
 		return dst;
 	}
 	cv::Mat stretch(const cv::Mat  &image, int minValue) {
-		//首先计算直方图
+		//首先计算直方图，采取简单的拉伸手段，左边灰度个数低于阈值的，全部映射为0，右边灰度个数低于阈值的，全部映射为255.
 		cv::Mat hist = getHistogram(image);
 		//找出左端个数大于minValue的灰度值，0-255
 		int imin=0;
@@ -109,6 +109,49 @@ public:
 		cv::Mat result;
 		result = applyLookup(image, lookup);
 		return result;
+
+	}
+	cv::Mat equalizeHist_self(const cv::Mat &image) {
+		//自己实现的直方图均衡化函数，原理与opencv中的equalizeHise函数一样
+		//首先，获取图像的直方图数组Hist
+		cv::Mat hist = getHistogram(image);
+		//新建一个新数组,作为灰度的累计概率
+		float cds[256] = { 0 };
+		//构造一个查找表
+		int dim(256);
+		cv::Mat lut(1, &dim, CV_8U);
+		//对Hist进行归一化
+		hist = hist / (image.cols*image.rows);
+		for (int i = 0; i < 255; i++) {
+			if (i == 0) {
+				cds[i] = hist.at<float>(i);
+			}
+			else {
+				cds[i] = cds[i - 1] + hist.at<float>(i);
+
+			}
+			lut.at<uchar>(i) = static_cast<uchar>(255 * cds[i]);
+		}
+		cv::Mat dst;
+		cv::LUT(image, lut, dst);
+		return dst;
+	}
+	cv::Mat colorimage_equalizeHist(const cv::Mat &image) {
+		//彩色图像均衡化。
+		//第一步先把图像转换到YCrCb颜色空间中去，这个颜色空间亮度Y是个独立的值，不受其他影响。
+		cv::Mat converted;
+		cv::cvtColor(image, converted, 36);
+		//分离converted为三个通道
+		vector<cv::Mat> channels;
+		cv::split(converted, channels);
+		//对Y分量的图像进行均衡化,得到均衡化的图像
+		cv::Mat dst;
+		cv::equalizeHist(channels[0], dst);
+		channels[0] = dst;
+		cv::Mat result,output;
+		cv::merge(channels, result);
+		cv::cvtColor(result, output, 38);
+		return output;
 
 	}
 };
