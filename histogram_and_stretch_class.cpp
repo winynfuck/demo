@@ -136,5 +136,22 @@ public:
 		cv::LUT(image, lut, dst);
 		return dst;
 	}
-};
+	cv::Mat colorimage_equalizeHist(const cv::Mat &image) {
+		//彩色图像均衡化。
+		//第一步先把图像转换到YCrCb颜色空间中去，这个颜色空间亮度Y是个独立的值，不受其他影响。
+		cv::Mat converted;
+		cv::cvtColor(image, converted, 36);
+		//分离converted为三个通道
+		vector<cv::Mat> channels;
+		cv::split(converted, channels);
+		//对Y分量的图像进行均衡化,得到均衡化的图像
+		cv::Mat dst;
+		cv::equalizeHist(channels[0], dst);
+		channels[0] = dst;
+		cv::Mat result,output;
+		cv::merge(channels, result);
+		cv::cvtColor(result, output, 38);
+		return output;
+
+	}
 };
