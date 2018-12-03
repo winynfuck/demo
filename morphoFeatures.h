@@ -87,3 +87,16 @@ public:
 
 	}
 };
+int main(int args, char** argv) {
+	//------------------------------对参考图像的处理
+	//读取參考图像
+	cv::Mat image = cv::imread("D:/A/building.jpg",0);
+	cv::Mat corners;
+	morphoFeatures m;
+	corners = m.getCorners(image);
+	//在图像中显示角点
+	m.drawOnImage(corners, image);
+	cv::imshow("corners on image", image);
+	cv::waitKey(0);
+
+}
