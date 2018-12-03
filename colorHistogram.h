@@ -22,6 +22,32 @@ public:
 		channels[1] = 1;
 		channels[2] = 2;
 	}
+	cv::Mat colorReduce(cv::Mat image, int div = 64) {
+		
+		int n = 0;
+		cv::Mat result = cv::Mat::zeros(image.size(), image.type());
+		while (1)
+			if (div >>= 1) n++;
+			else break;
+
+		//用来对像素 取整的掩模
+		uchar mask = 0xFF << n;
+
+		int nl = image.rows;//行数
+		//每行的元素个数
+		int nc = image.cols *image.channels();
+		for (int j = 0; j < nl; j++) {
+			//得到第j行的首地址
+			uchar *data = image.ptr<uchar>(j);
+			for (int i = 0; i < nc; i++) {
+				//处理每一个像素，以达到量化的目的
+				data[i] = (data[i] & mask) + div / 2;
+			}//像素处理完成
+		}//行处理完成
+		return image;
+
+
+	}
 	cv::Mat getHueHistogram(const cv::Mat &image, int minSaturation = 0) {
 		cv::Mat hist;
 		//将图像转换到HSV色彩空间
