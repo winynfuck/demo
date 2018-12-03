@@ -8,7 +8,7 @@ void sharpen(const cv::Mat &image, cv::Mat &result) {
 		uchar* output = result.ptr<uchar>(j);//输出行
 		int channel = image.channels();
 		for (int i = 1; i < image.cols - 1; i++) {
-			*output++ = cv::saturate_cast<uchar>(5 * current[i] - current[i - channel] - current[i + channel] - previous[i] - next[i]);
+			*output = cv::saturate_cast<uchar>(5 * current[i] - current[i - channel] - current[i + channel] - previous[i] - next[i]);
 		}
 		result.row(0).setTo(cv::Scalar(0));
 		result.row(result.rows - 1).setTo(cv::Scalar(0));
