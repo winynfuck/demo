@@ -66,7 +66,24 @@ public:
 
 		return binary;
 	}
+<<<<<<< HEAD
 	
 
 
 };
+=======
+};
+int main(int args, char** argv) {
+	//------------------------------对参考图像的处理
+	//读取參考图像
+	cv::Mat image = cv::imread("D:/A/building.jpg",0);
+	cv::Mat corners;
+	morphoFeatures m;
+	corners = m.getCorners(image);
+	//在图像中显示角点
+	m.drawOnImage(corners, image);
+	cv::imshow("corners on image", image);
+	cv::waitKey(0);
+
+}
+>>>>>>> a40fd1bf5e826e2014ea3f479a50837bcd2f31b3
